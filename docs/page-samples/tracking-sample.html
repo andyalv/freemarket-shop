@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeMarket Tracking Sample</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-clay: #7f5539;
+      --color-tan: #a68a64;
+      --color-cream: #ede0d4;
+      --color-sage: #656d4a;
+      --color-forest: #414833;
+      --color-garden-cta: #15803d;
+      --color-error: #b94a48;
+      --gradient-hero: linear-gradient(135deg, rgba(111,160,108,0.25) 0%, rgba(102,109,74,0.25) 100%);
+      --bg: var(--color-cream);
+      --text: var(--color-forest);
+      --text-muted: var(--color-sage);
+      --surface: #fff;
+      --border: rgba(65,72,51,0.15);
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 6px 20px rgba(0,0,0,0.10);
+      --container: 1000px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: var(--text); background: var(--bg); line-height: 1.55; }
+    h1, h2, h3 { color: var(--text); margin: 0 0 0.5rem; line-height: 1.2; }
+    h1, h2 { font-family: 'Merriweather', Georgia, 'Times New Roman', serif; font-weight: 700; }
+    h1 { font-size: 2.2rem; }
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+    .hero { background: var(--gradient-hero); border-bottom: 1px solid var(--border); }
+    .hero .inner { padding: 36px 0; }
+    .hero p { color: var(--text-muted); }
+
+    .section { padding: 32px 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+    .timeline { position: relative; padding-left: 26px; }
+    .timeline::before { content: ""; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: rgba(65,72,51,0.18); }
+    .t-item { position: relative; margin: 14px 0; }
+    .t-dot { position: absolute; left: -2px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--color-garden-cta); border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(21,128,61,0.25); }
+    .t-item.warn .t-dot { background: var(--color-error); box-shadow: 0 0 0 2px rgba(185,74,72,0.25); }
+    .block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 14px; }
+    .t-card { margin-left: 8px; background: #faf7f2; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+    .t-meta { color: var(--text-muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="container inner">
+      <h1>Tracking timeline — sample</h1>
+      <p>Clear statuses with timestamps and exception guidance.</p>
+    </div>
+  </section>
+  <main class="container section">
+    <div class="grid">
+      <div class="block">
+        <h3>Normal delivery</h3>
+        <div class="timeline">
+          <div class="t-item">
+            <div class="t-dot"></div>
+            <div class="t-card"><strong>Order created</strong><div class="t-meta">Feb 7, 9:18 AM</div></div>
+          </div>
+          <div class="t-item">
+            <div class="t-dot"></div>
+            <div class="t-card"><strong>Shipped</strong><div class="t-meta">Feb 8, 3:42 PM</div></div>
+          </div>
+          <div class="t-item">
+            <div class="t-dot"></div>
+            <div class="t-card"><strong>Delivered</strong><div class="t-meta">Feb 9, 11:06 AM</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="block">
+        <h3>Exception case</h3>
+        <div class="timeline">
+          <div class="t-item">
+            <div class="t-dot"></div>
+            <div class="t-card"><strong>Order created</strong><div class="t-meta">Feb 7, 10:05 AM</div></div>
+          </div>
+          <div class="t-item warn">
+            <div class="t-dot"></div>
+            <div class="t-card">
+              <strong>Shipment failed</strong>
+              <div class="t-meta">Feb 8, 5:20 PM</div>
+              <p style="margin-top:6px;">Address issue detected. We’re holding the shipment.</p>
+              <div style="margin-top:8px; display:flex; gap:8px;">
+                <button class="btn secondary" style="border:1px solid var(--color-tan); padding:8px 12px; border-radius:10px; background:transparent; cursor:pointer;">Update address</button>
+                <button class="btn ghost" style="padding:8px 12px; border-radius:10px; background:transparent; cursor:pointer;">Contact support</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeMarket Admin — Sample</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <style>
+    :root {
+      --color-clay: #7f5539;
+      --color-tan: #a68a64;
+      --color-cream: #ede0d4;
+      --color-sage: #656d4a;
+      --color-forest: #414833;
+      --color-garden-cta: #15803d; /* Garden Editorial CTA */
+      --color-error: #b94a48; /* muted red for destructive */
+
+      --gradient-cta: linear-gradient(135deg, #7f5539 0%, #a68a64 60%, #656d4a 100%);
+      --gradient-hero: linear-gradient(135deg, rgba(111,160,108,0.25) 0%, rgba(102,109,74,0.25) 100%);
+
+      --bg: var(--color-cream);
+      --text: var(--color-forest);
+      --text-muted: var(--color-sage);
+      --surface: #fff;
+      --border: rgba(65,72,51,0.15);
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 6px 20px rgba(0,0,0,0.10);
+      --container: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2, h3 { color: var(--text); line-height: 1.2; margin: 0 0 0.5rem; }
+    h1, h2 { font-family: 'Merriweather', Georgia, 'Times New Roman', serif; font-weight: 700; }
+    h1 { font-size: 2.0rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.05rem; font-weight: 700; }
+    p { margin: 0 0 1rem; color: var(--text); }
+    small { color: var(--text-muted); }
+    a { color: var(--color-garden-cta); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+    /* Header */
+    .site-header {
+      position: sticky; top: 0; z-index: 40;
+      background: rgba(237, 224, 212, 0.9); backdrop-filter: saturate(160%) blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .site-header .inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: 0.2px; }
+    .brand-logo { width: 26px; height: 26px; border-radius: 8px; background: var(--gradient-cta); box-shadow: var(--shadow-sm); }
+    .admin-nav { display: flex; gap: 14px; align-items: center; }
+    .admin-nav a { color: var(--text); font-weight: 600; opacity: 0.9; }
+    .admin-nav a:hover { opacity: 1; }
+    .icon-btn { width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; border: 1px solid var(--border); background: rgba(255,255,255,0.6); cursor: pointer; }
+    .icon-btn:hover { background: rgba(237,224,212,0.8); }
+    .avatar { width: 32px; height: 32px; border-radius: 999px; object-fit: cover; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+
+    /* App layout */
+    .admin { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: start; padding: 20px 0; }
+    .sidebar { position: sticky; top: 66px; align-self: start; background: rgba(255,255,255,0.7); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 12px; }
+    .side-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; margin: 8px 0; text-transform: uppercase; letter-spacing: 0.04em; }
+    .side-list { display: grid; gap: 6px; }
+    .side-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: 10px; color: var(--text); text-decoration: none; }
+    .side-link.active, .side-link:hover { background: rgba(166,138,100,0.10); }
+
+    /* Blocks */
+    .block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 14px; }
+    .section { display: grid; gap: 14px; margin-bottom: 20px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; }
+    .actions { display: flex; gap: 8px; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; border: 1px solid transparent; font-weight: 600; cursor: pointer; text-decoration: none; transition: transform .04s ease, box-shadow .2s ease, background .2s ease; }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: var(--color-clay); color: #fff; box-shadow: var(--shadow-sm); }
+    .btn.primary:hover { filter: brightness(1.05); }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--color-tan); }
+    .btn.secondary:hover { background: rgba(166,138,100,0.10); }
+    .btn.ghost { background: transparent; color: var(--text); }
+    .btn.destructive { background: var(--color-error); color: #fff; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(21,128,61,0.12); color: var(--color-garden-cta); border: 1px solid rgba(21,128,61,0.25); }
+    .badge.warn { background: rgba(185,74,72,0.14); color: #8b2f2d; border-color: rgba(185,74,72,0.35); }
+
+    /* Filters & inputs */
+    .filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .input { width: 100%; border: 1px solid var(--border); background: #fff; padding: 10px 12px; border-radius: 10px; }
+    .label { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: inline-block; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* Table */
+    .table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .table th, .table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    .table th { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; background: rgba(237,224,212,0.5); position: sticky; top: 0; }
+    .row-actions { display: inline-flex; gap: 6px; }
+
+    /* Drawer (reusing storefront pattern) */
+    .drawer-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.34); opacity: 0; visibility: hidden; transition: .2s ease; }
+    .drawer { position: fixed; top: 0; right: -520px; width: 480px; max-width: 95vw; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow-md); transition: right .25s ease; display: flex; flex-direction: column; z-index: 60; }
+    .drawer.open { right: 0; }
+    .drawer-backdrop.open { opacity: 1; visibility: visible; }
+    .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 14px; border-bottom: 1px solid var(--border); }
+    .drawer-body { padding: 14px; display: grid; gap: 12px; grid-auto-rows: min-content; overflow: auto; }
+    .drawer-footer { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
+
+    /* Timeline (for shipment details) */
+    .timeline { position: relative; padding-left: 26px; }
+    .timeline::before { content: ""; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: rgba(65,72,51,0.18); }
+    .t-item { position: relative; margin: 10px 0; }
+    .t-dot { position: absolute; left: -2px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--color-garden-cta); border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(21,128,61,0.25); }
+    .t-item.warn .t-dot { background: var(--color-error); box-shadow: 0 0 0 2px rgba(185,74,72,0.25); }
+    .t-card { margin-left: 8px; background: #faf7f2; border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; }
+    .t-meta { color: var(--text-muted); font-size: 0.85rem; }
+
+    /* Toast */
+    .toast { position: fixed; right: 16px; bottom: 16px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-md); border-radius: 12px; padding: 10px 12px; display: none; z-index: 70; }
+    .toast.show { display: block; }
+
+    footer { padding: 26px 0; color: var(--text-muted); border-top: 1px solid var(--border); text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="site-header" id="top">
+    <div class="container inner">
+      <div class="brand"><div class="brand-logo" aria-hidden="true"></div> FreeMarket Admin</div>
+      <nav class="admin-nav" aria-label="Account actions">
+        <img class="avatar" src="https://i.pravatar.cc/80?img=12" alt="Account" />
+        <button class="icon-btn" aria-label="Log out" id="logoutBtn">
+          <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="admin">
+      <!-- Sidebar nav -->
+      <aside class="sidebar" aria-label="Admin navigation">
+        <div class="side-title">Storefront</div>
+        <div class="side-list">
+          <a class="side-link" href="#products">Products</a>
+          <a class="side-link" href="#inventory">Inventory</a>
+          <a class="side-link" href="#shipments">Shipments</a>
+          <a class="side-link" href="#orders">Orders</a>
+          <a class="side-link" href="#discounts">Discounts</a>
+          <a class="side-link" href="#users">Users/Support</a>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <div class="main">
+        <!-- Products -->
+        <section id="products" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Products</h2>
+              <p class="text-muted">Create, edit, and manage product details, variants, and provenance fields.</p>
+            </div>
+            <div class="actions">
+              <button class="btn secondary" id="importBtn">Import CSV</button>
+              <button class="btn primary" id="newProductBtn">New product</button>
+            </div>
+          </div>
+          <div class="block">
+            <div class="filters" style="justify-content: space-between;">
+              <div class="filters" style="flex:1;">
+                <input class="input" style="max-width: 360px;" placeholder="Search name, SKU, origin…" />
+                <select class="input" style="max-width: 160px;">
+                  <option>All categories</option>
+                  <option>Vegetables</option>
+                  <option>Fruits</option>
+                  <option>Dairy</option>
+                </select>
+                <select class="input" style="max-width: 160px;">
+                  <option>Any stock</option>
+                  <option>In stock</option>
+                  <option>Limited</option>
+                  <option>Out of stock</option>
+                </select>
+              </div>
+              <div class="actions">
+                <button class="btn ghost">Clear</button>
+              </div>
+            </div>
+            <div style="overflow:auto; margin-top: 10px;">
+              <table class="table" aria-label="Products table">
+                <thead>
+                  <tr>
+                    <th style="min-width:220px;">Name</th>
+                    <th>SKU</th>
+                    <th>Price</th>
+                    <th>Origin</th>
+                    <th>Harvest/Batch</th>
+                    <th>Availability</th>
+                    <th>Stock</th>
+                    <th style="min-width:220px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Heirloom Tomatoes (1 lb)</strong></td>
+                    <td>VEG-TOM-1LB</td>
+                    <td>$4.50</td>
+                    <td>Green Fork Farm</td>
+                    <td>Harvested: Feb 7</td>
+                    <td>2–3 days</td>
+                    <td><span class="badge">In stock</span></td>
+                    <td>
+                      <span class="row-actions">
+                        <button class="btn secondary sm" data-open="productDrawer">Edit</button>
+                        <button class="btn ghost sm">Variants</button>
+                        <button class="btn ghost sm">Inventory</button>
+                        <button class="btn destructive sm">Delete</button>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Pasture Eggs (12)</strong></td>
+                    <td>DAI-EGG-12</td>
+                    <td>$6.00</td>
+                    <td>Willow Ridge</td>
+                    <td>Collected: Feb 8</td>
+                    <td>2–3 days</td>
+                    <td><span class="badge" style="background: rgba(166,138,100,0.18); color: var(--color-clay); border-color: rgba(166,138,100,0.38);">Limited</span></td>
+                    <td>
+                      <span class="row-actions">
+                        <button class="btn secondary sm" data-open="productDrawer">Edit</button>
+                        <button class="btn ghost sm">Variants</button>
+                        <button class="btn ghost sm">Inventory</button>
+                        <button class="btn destructive sm">Delete</button>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="opacity:0.75;"><strong>Strawberries (1 lb)</strong></td>
+                    <td>FRU-STR-1LB</td>
+                    <td>$5.50</td>
+                    <td>Sunvale Co-op</td>
+                    <td>Harvested: Feb 6</td>
+                    <td>Next week</td>
+                    <td><span class="badge warn">Out of stock</span></td>
+                    <td>
+                      <span class="row-actions">
+                        <button class="btn secondary sm" data-open="productDrawer">Edit</button>
+                        <button class="btn ghost sm">Variants</button>
+                        <button class="btn ghost sm">Inventory</button>
+                        <button class="btn destructive sm">Delete</button>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Inventory (light shell) -->
+        <section id="inventory" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Inventory</h2>
+              <p class="text-muted">Adjust stock counts per SKU. Changes apply immediately.</p>
+            </div>
+            <div class="actions">
+              <button class="btn secondary">Export</button>
+            </div>
+          </div>
+          <div class="block">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+              <div class="block" style="padding:12px;">
+                <strong>Heirloom Tomatoes</strong>
+                <div class="field-row" style="margin-top:8px; grid-template-columns: 1fr auto; align-items: end;">
+                  <div>
+                    <label class="label" for="tomStock">On hand</label>
+                    <input id="tomStock" class="input" type="number" value="48" />
+                  </div>
+                  <button class="btn primary" onclick="showToast('Stock updated')">Save</button>
+                </div>
+              </div>
+              <div class="block" style="padding:12px;">
+                <strong>Pasture Eggs (12)</strong>
+                <div class="field-row" style="margin-top:8px; grid-template-columns: 1fr auto; align-items: end;">
+                  <div>
+                    <label class="label" for="eggStock">On hand</label>
+                    <input id="eggStock" class="input" type="number" value="12" />
+                  </div>
+                  <button class="btn primary" onclick="showToast('Stock updated')">Save</button>
+                </div>
+              </div>
+              <div class="block" style="padding:12px; opacity:.8;">
+                <strong>Strawberries</strong>
+                <div class="field-row" style="margin-top:8px; grid-template-columns: 1fr auto; align-items: end;">
+                  <div>
+                    <label class="label" for="strStock">On hand</label>
+                    <input id="strStock" class="input" type="number" value="0" />
+                  </div>
+                  <button class="btn secondary" disabled>Save</button>
+                </div>
+                <small class="text-muted">Out of stock</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Shipments -->
+        <section id="shipments" class="section">
+          <div class="section-head">
+            <div>
+              <h2>Shipments</h2>
+              <p class="text-muted">Update statuses. Failed/Returned requires a reason and resolution notes.</p>
+            </div>
+            <div class="actions">
+              <button class="btn secondary">Bulk actions</button>
+            </div>
+          </div>
+          <div class="block">
+            <div style="overflow:auto;">
+              <table class="table" aria-label="Shipments table">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                    <th style="min-width:180px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>#FM-10128</strong></td>
+                    <td>Lauren Park</td>
+                    <td><span class="badge">Shipped</span></td>
+                    <td>Feb 8, 3:42 PM</td>
+                    <td>
+                      <span class="row-actions">
+                        <button class="btn secondary sm" data-open="shipmentDrawer">Update</button>
+                        <button class="btn ghost sm" data-open="shipmentDetailDrawer">Details</button>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>#FM-10135</strong></td>
+                    <td>Chris Young</td>
+                    <td><span class="badge" style="background: rgba(237, 224, 212, 0.7); border-color: rgba(65,72,51,0.20); color: var(--text);">Created</span></td>
+                    <td>Feb 9, 9:18 AM</td>
+                    <td>
+                      <span class="row-actions">
+                        <button class="btn secondary sm" data-open="shipmentDrawer">Update</button>
+                        <button class="btn ghost sm" data-open="shipmentDetailDrawer">Details</button>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>#FM-10141</strong></td>
+                    <td>Renee Holt</td>
+                    <td><span class="badge warn">Failed</span></td>
+                    <td>Feb 9, 5:20 PM</td>
+                    <td>
+                      <span class="row-actions">
+                        <button class="btn secondary sm" data-open="shipmentDrawer" data-mode="failed">Resolve</button>
+                        <button class="btn ghost sm" data-open="shipmentDetailDrawer">Details</button>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <footer>© 2026 FreeMarket — Admin sample preview</footer>
+      </div>
+    </div>
+  </main>
+
+  <!-- Drawers -->
+  <div class="drawer-backdrop" id="backdrop"></div>
+
+  <!-- Product editor drawer -->
+  <aside class="drawer" id="productDrawer" aria-hidden="true" aria-label="Edit product">
+    <div class="drawer-header">
+      <strong>Edit product</strong>
+      <button class="btn ghost" data-close>Close</button>
+    </div>
+    <div class="drawer-body">
+      <div>
+        <label class="label" for="pName">Name</label>
+        <input id="pName" class="input" value="Heirloom Tomatoes (1 lb)" />
+      </div>
+      <div class="field-row">
+        <div>
+          <label class="label" for="pSku">SKU</label>
+          <input id="pSku" class="input" value="VEG-TOM-1LB" />
+        </div>
+        <div>
+          <label class="label" for="pPrice">Price</label>
+          <input id="pPrice" class="input" type="number" step="0.01" value="4.50" />
+        </div>
+      </div>
+      <div>
+        <label class="label" for="pDesc">Description</label>
+        <textarea id="pDesc" class="input" rows="3">Fresh heirloom tomatoes picked this week.</textarea>
+      </div>
+      <div class="field-row">
+        <div>
+          <label class="label" for="pCategory">Category</label>
+          <select id="pCategory" class="input">
+            <option>Vegetables</option>
+            <option>Fruits</option>
+            <option>Dairy</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="pStock">Stock on hand</label>
+          <input id="pStock" class="input" type="number" value="48" />
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border); padding-top:10px;">
+        <h3 style="font-family: 'Inter'; font-size: 1rem;">From the farm</h3>
+        <div class="field-row">
+          <div>
+            <label class="label" for="pOrigin">Farm / Origin</label>
+            <input id="pOrigin" class="input" value="Green Fork Farm, TX" />
+          </div>
+          <div>
+            <label class="label" for="pHarvest">Harvest / Batch</label>
+            <input id="pHarvest" class="input" value="Harvested: Feb 7" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label class="label" for="pWindow">Delivery window</label>
+            <select id="pWindow" class="input">
+              <option>2–3 days</option>
+              <option>Next week</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="pFarmer">Farmer profile</label>
+            <input id="pFarmer" class="input" value="Sofia Lane" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div class="actions" style="justify-content: space-between;">
+        <button class="btn ghost" data-close>Cancel</button>
+        <div class="actions">
+          <button class="btn secondary">Save draft</button>
+          <button class="btn primary" onclick="showToast('Product saved')">Save</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Shipment status drawer -->
+  <aside class="drawer" id="shipmentDrawer" aria-hidden="true" aria-label="Update shipment">
+    <div class="drawer-header">
+      <strong>Update shipment</strong>
+      <button class="btn ghost" data-close>Close</button>
+    </div>
+    <div class="drawer-body">
+      <div class="field-row">
+        <div>
+          <label class="label" for="sOrder">Order</label>
+          <input id="sOrder" class="input" value="#FM-10141" disabled />
+        </div>
+        <div>
+          <label class="label" for="sCustomer">Customer</label>
+          <input id="sCustomer" class="input" value="Renee Holt" disabled />
+        </div>
+      </div>
+      <div>
+        <label class="label" for="sStatus">Status</label>
+        <select id="sStatus" class="input">
+          <option>Created</option>
+          <option>Shipped</option>
+          <option>Delivered</option>
+          <option>Failed</option>
+          <option>Returned</option>
+        </select>
+      </div>
+      <div id="exceptionFields" style="display:none;">
+        <div>
+          <label class="label" for="sReason">Reason</label>
+          <select id="sReason" class="input">
+            <option value="address">Address issue</option>
+            <option value="damage">Package damage</option>
+            <option value="noanswer">No answer</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="sNotes">Resolution notes</label>
+          <textarea id="sNotes" class="input" rows="3" placeholder="Describe next steps (reship/refund/credit)…"></textarea>
+        </div>
+        <div>
+          <label class="label" for="sResolution">Resolution</label>
+          <select id="sResolution" class="input">
+            <option>Reship</option>
+            <option>Refund</option>
+            <option>Credit</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div class="actions" style="justify-content: space-between;">
+        <button class="btn ghost" data-close>Cancel</button>
+        <div class="actions">
+          <button class="btn secondary" onclick="showToast('Saved as draft')">Save draft</button>
+          <button class="btn primary" id="saveShipmentBtn">Save update</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Shipment details drawer (read-only timeline) -->
+  <aside class="drawer" id="shipmentDetailDrawer" aria-hidden="true" aria-label="Shipment details">
+    <div class="drawer-header">
+      <strong>Shipment details — #FM-10128</strong>
+      <button class="btn ghost" data-close>Close</button>
+    </div>
+    <div class="drawer-body">
+      <div class="block" style="padding: 12px;">
+        <h3>Timeline</h3>
+        <div class="timeline" style="margin-top:8px;">
+          <div class="t-item">
+            <div class="t-dot"></div>
+            <div class="t-card"><strong>Order created</strong><div class="t-meta">Feb 7, 9:18 AM</div></div>
+          </div>
+          <div class="t-item">
+            <div class="t-dot"></div>
+            <div class="t-card"><strong>Shipped</strong><div class="t-meta">Feb 8, 3:42 PM</div></div>
+          </div>
+          <div class="t-item">
+            <div class="t-dot"></div>
+            <div class="t-card"><strong>Delivered</strong><div class="t-meta">Feb 9, 11:06 AM</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="block" style="padding: 12px;">
+        <h3>Items</h3>
+        <ul style="margin:8px 0 0 18px;">
+          <li>Heirloom Tomatoes · 1 × $4.50</li>
+          <li>Pasture Eggs · 2 × $6.00</li>
+          <li>Baby Kale · 1 × $3.25</li>
+        </ul>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn secondary" data-close>Close</button>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <script>
+    // Minimal interactivity for admin sample only
+    const backdrop = document.getElementById('backdrop');
+    const toast = document.getElementById('toast');
+
+    function openDrawer(id) {
+      document.getElementById(id).classList.add('open');
+      backdrop.classList.add('open');
+      document.getElementById(id).setAttribute('aria-hidden', 'false');
+    }
+    function closeDrawers() {
+      document.querySelectorAll('.drawer.open').forEach(d => d.classList.remove('open'));
+      backdrop.classList.remove('open');
+      document.querySelectorAll('.drawer').forEach(d => d.setAttribute('aria-hidden', 'true'));
+    }
+    backdrop.addEventListener('click', closeDrawers);
+    document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', closeDrawers));
+    document.querySelectorAll('[data-open]').forEach(btn => btn.addEventListener('click', (e) => {
+      const id = btn.getAttribute('data-open');
+      openDrawer(id);
+      // Pre-fill failed case for resolve button
+      if (id === 'shipmentDrawer' && btn.getAttribute('data-mode') === 'failed') {
+        document.getElementById('sStatus').value = 'Failed';
+        toggleException(true);
+      }
+    }));
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1600);
+    }
+
+    // Shipment status exception fields
+    const sStatus = document.getElementById('sStatus');
+    const exceptionFields = document.getElementById('exceptionFields');
+    function toggleException(force) {
+      const val = (force === true) ? 'Failed' : sStatus.value;
+      const isException = val === 'Failed' || val === 'Returned';
+      exceptionFields.style.display = isException ? 'grid' : 'none';
+      // rudimentary required handling
+      document.getElementById('sReason').required = isException;
+      document.getElementById('sNotes').required = isException;
+      document.getElementById('sResolution').required = isException;
+    }
+    if (sStatus) sStatus.addEventListener('change', () => toggleException());
+
+    // Save shipment with validation example
+    const saveShipmentBtn = document.getElementById('saveShipmentBtn');
+    if (saveShipmentBtn) {
+      saveShipmentBtn.addEventListener('click', () => {
+        const val = sStatus.value;
+        const isException = val === 'Failed' || val === 'Returned';
+        if (isException) {
+          const reason = document.getElementById('sReason').value;
+          const notes = document.getElementById('sNotes').value.trim();
+          const res = document.getElementById('sResolution').value;
+          if (!notes) {
+            showToast('Please add resolution notes');
+            return;
+          }
+          showToast('Exception saved');
+        } else {
+          showToast('Status updated');
+        }
+        closeDrawers();
+      });
+    }
+
+    // New product button opens editor
+    document.getElementById('newProductBtn')?.addEventListener('click', () => openDrawer('productDrawer'));
+
+    // Logout demo
+    document.getElementById('logoutBtn')?.addEventListener('click', () => showToast('Logged out (sample)'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeMarket UI Samples</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <style>
+    :root {
+      --color-clay: #7f5539;
+      --color-tan: #a68a64;
+      --color-cream: #ede0d4;
+      --color-sage: #656d4a;
+      --color-forest: #414833;
+      --color-garden-cta: #15803d; /* Garden Editorial CTA */
+      --color-error: #b94a48; /* muted red for destructive */
+
+      --gradient-cta: linear-gradient(135deg, #7f5539 0%, #a68a64 60%, #656d4a 100%);
+      --gradient-hero: linear-gradient(135deg, rgba(111,160,108,0.25) 0%, rgba(102,109,74,0.25) 100%);
+
+      --bg: var(--color-cream);
+      --text: var(--color-forest);
+      --text-muted: var(--color-sage);
+      --surface: #fff;
+      --border: rgba(65,72,51,0.15);
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 6px 20px rgba(0,0,0,0.10);
+      --container: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2, h3 { color: var(--text); line-height: 1.2; margin: 0 0 0.5rem; }
+    h1, h2 { font-family: 'Merriweather', Georgia, 'Times New Roman', serif; font-weight: 700; }
+    h1 { font-size: 2.6rem; }
+    h2 { font-size: 1.8rem; }
+    h3 { font-size: 1.2rem; font-weight: 700; }
+    p { margin: 0 0 1rem; color: var(--text); }
+    small { color: var(--text-muted); }
+    a { color: var(--color-garden-cta); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+    /* Header */
+    .site-header {
+      position: sticky; top: 0; z-index: 40;
+      background: rgba(237, 224, 212, 0.8); backdrop-filter: saturate(160%) blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .site-header .inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: 0.2px; }
+    .brand-logo { width: 28px; height: 28px; border-radius: 8px; background: var(--gradient-cta); box-shadow: var(--shadow-sm); }
+    .nav { display: flex; gap: 18px; align-items: center; }
+    .nav a { color: var(--text); font-weight: 500; opacity: 0.9; }
+    .nav a:hover { opacity: 1; }
+    .hide { display: none !important; }
+
+    /* Cart floating button */
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+    .cart-fab { position: fixed; bottom: 18px; right: 18px; z-index: 60; width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center; box-shadow: var(--shadow-sm); border: 1px solid transparent; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 12px; border: 1px solid transparent; font-weight: 600; cursor: pointer; text-decoration: none; transition: transform .04s ease, box-shadow .2s ease, background .2s ease; }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: var(--color-clay); color: #fff; box-shadow: var(--shadow-sm); }
+    .btn.primary:hover { filter: brightness(1.05); }
+    .btn.green { background: var(--color-garden-cta); color: #fff; box-shadow: var(--shadow-sm); }
+    .btn.green:hover { filter: brightness(1.05); }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--color-tan); }
+    .btn.secondary:hover { background: rgba(166,138,100,0.10); }
+    .btn.ghost { background: transparent; color: var(--text); }
+    .btn.destructive { background: var(--color-error); color: #fff; }
+
+    /* Hero */
+    .hero { position: relative; overflow: hidden; background: var(--gradient-hero); border-bottom: 1px solid var(--border); }
+    .hero .inner { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; padding: 56px 0; }
+    .hero .copy p { color: var(--text-muted); font-size: 1.05rem; }
+    .hero .actions { display: flex; gap: 12px; margin-top: 18px; }
+    .hero .image { position: relative; height: 280px; border-radius: var(--radius); background: radial-gradient(120% 120% at 20% 10%, rgba(111,160,108,0.35) 0%, rgba(102,109,74,0.25) 60%, transparent 100%), url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'600\'><rect width=\'100%\' height=\'100%\' fill=\'%23ede0d4\'/><g fill=\'%23656d4a\' opacity=\'0.15\'><circle cx=\'200\' cy=\'300\' r=\'140\'/><circle cx=\'500\' cy=\'200\' r=\'100\'/><circle cx=\'620\' cy=\'420\' r=\'90\'/></g></svg>'); background-size: cover; border: 1px solid var(--border); box-shadow: var(--shadow-md); }
+
+    /* Section header */
+    .section { padding: 40px 0; }
+    .section-header { display: flex; align-items: end; justify-content: space-between; margin-bottom: 18px; }
+    .section-header p { color: var(--text-muted); }
+
+    /* Filter bar */
+    .filters { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 8px 0 18px; }
+    .chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.7); border-radius: 999px; color: var(--text); }
+    .chip select { border: none; background: transparent; color: var(--text); font-weight: 600; }
+
+    /* Grid & Cards */
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    @media (max-width: 1024px) { .hero .inner { grid-template-columns: 1fr; } .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
+    .card-media { position: relative; background: #f6efe8; aspect-ratio: 4 / 3; border-bottom: 1px solid var(--border); }
+    .badge { position: absolute; top: 10px; left: 10px; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: rgba(21,128,61,0.12); color: var(--color-garden-cta); border: 1px solid rgba(21,128,61,0.25); }
+    .badge.limited { background: rgba(166,138,100,0.18); color: var(--color-clay); border-color: rgba(166,138,100,0.38); }
+    .badge.out { background: rgba(185,74,72,0.14); color: #8b2f2d; border-color: rgba(185,74,72,0.35); }
+    .card-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .meta { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.92rem; }
+    .origin { color: var(--text-muted); font-weight: 600; }
+    .price { font-weight: 700; color: var(--text); }
+    .actions-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+    .actions-row .qty { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .qty button { background: transparent; border: none; padding: 8px 10px; cursor: pointer; color: var(--text); }
+    .qty input { width: 38px; text-align: center; border: none; padding: 8px 0; }
+
+    /* Product detail */
+    .product-detail { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; }
+    .product-image { background: #f6efe8; border: 1px solid var(--border); border-radius: var(--radius); aspect-ratio: 4/3; box-shadow: var(--shadow-sm); }
+    .product-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); }
+    .provenance { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .prov-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .prov-item { display: grid; grid-template-columns: 24px 1fr; align-items: start; gap: 8px; background: #faf7f2; border: 1px solid var(--border); border-radius: 12px; padding: 10px; }
+    .prov-ico { width: 24px; height: 24px; color: var(--color-sage); }
+
+    /* Cart drawer */
+    .drawer-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.34); opacity: 0; visibility: hidden; transition: .2s ease; }
+    .drawer { position: fixed; top: 0; right: -420px; width: 380px; max-width: 92vw; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow-md); transition: right .25s ease; display: flex; flex-direction: column; }
+    .drawer.open { right: 0; }
+    .drawer-backdrop.open { opacity: 1; visibility: visible; }
+    .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 14px; border-bottom: 1px solid var(--border); }
+    .drawer-body { padding: 14px; display: grid; gap: 12px; grid-auto-rows: min-content; overflow: auto; }
+    .cart-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 12px; }
+    .cart-thumb { width: 64px; height: 64px; background: #f6efe8; border-radius: 10px; border: 1px solid var(--border); }
+    .cart-line { display: flex; align-items: center; justify-content: space-between; }
+    .drawer-footer { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
+
+    /* Checkout summary */
+    .summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
+    .summary .row { display: flex; justify-content: space-between; margin: 6px 0; color: var(--text-muted); }
+    .summary .row.total { color: var(--text); font-weight: 800; font-size: 1.05rem; }
+
+    /* Checkout two-column with carousel */
+    .checkout-wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 22px; align-items: start; }
+    .carousel { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .slides { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; width: 100%; height: 360px; transition: transform .3s ease; }
+    .slide { width: 100%; height: 100%; background: #f6efe8; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-muted); border-right: 1px solid var(--border); }
+    .c-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(237,224,212,0.9); border: 1px solid var(--border); border-radius: 999px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; box-shadow: var(--shadow-sm); }
+    .c-btn:hover { background: rgba(237,224,212,1); }
+    .c-prev { left: 10px; }
+    .c-next { right: 10px; }
+    .carousel-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; gap: 6px; justify-content: center; }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: rgba(65,72,51,0.25); }
+    .dot.active { background: var(--color-garden-cta); box-shadow: 0 0 0 2px rgba(21,128,61,0.2); }
+    .c-btn .material-symbols-outlined { font-size: 22px; line-height: 1; display: block; }
+
+    /* Hero-only hover: outline button fills with border color and white text */
+    .hero .btn.secondary:hover { background: var(--color-tan); color: #fff; }
+
+    /* Tracking timeline */
+    .timeline { position: relative; padding-left: 26px; }
+    .timeline::before { content: ""; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: rgba(65,72,51,0.18); }
+    .t-item { position: relative; margin: 14px 0; }
+    .t-dot { position: absolute; left: -2px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--color-garden-cta); border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(21,128,61,0.25); }
+    .t-item.warn .t-dot { background: var(--color-error); box-shadow: 0 0 0 2px rgba(185,74,72,0.25); }
+    .t-card { margin-left: 8px; background: #faf7f2; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+    .t-meta { color: var(--text-muted); font-size: 0.9rem; }
+
+    footer { padding: 30px 0; color: var(--text-muted); border-top: 1px solid var(--border); text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="site-header" id="top">
+    <div class="container inner">
+      <div class="brand"><div class="brand-logo" aria-hidden="true"></div> FreeMarket</div>
+      <nav class="nav">
+        <a href="#top">Home</a>
+        <a href="#fresh">What’s fresh</a>
+        <a href="#product">Our products</a>
+        <a href="#tracking">Tracking</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Fixed cart button (always present) -->
+  <button class="cart-fab btn primary" id="openCart" aria-label="Open cart">
+    <span class="material-symbols-outlined" aria-hidden="true">shopping_cart</span>
+  </button>
+
+  <section class="hero">
+    <div class="container inner">
+      <div class="copy">
+        <h1>Fresh, local, and honestly good.</h1>
+        <p>Shop this week’s organic picks from nearby farms. Clear provenance and delivery windows—simple for everyone.</p>
+        <div class="actions">
+          <a class="btn green" href="#fresh">Shop what’s fresh</a>
+          <a class="btn secondary" href="#product">See a product</a>
+        </div>
+      </div>
+      <div class="image" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- Weekly discovery -->
+    <section id="fresh" class="section">
+      <div class="section-header">
+        <div>
+          <h2>What’s fresh this week</h2>
+          <p>Curated local picks with provenance upfront.</p>
+        </div>
+        <div>
+          <button class="btn ghost" onclick="document.getElementById('filters').classList.toggle('hide')">Toggle filters</button>
+        </div>
+      </div>
+
+      <div id="filters" class="filters">
+        <span class="chip">Category
+          <select aria-label="Category">
+            <option>All</option>
+            <option>Vegetables</option>
+            <option>Fruits</option>
+            <option>Dairy</option>
+          </select>
+        </span>
+        <span class="chip">Delivery window
+          <select aria-label="Delivery window">
+            <option>Any</option>
+            <option>2–3 days</option>
+            <option>Next week</option>
+          </select>
+        </span>
+        <button class="btn ghost" onclick="alert('Filters cleared (sample)')">Clear filters</button>
+      </div>
+
+      <div class="grid">
+        <!-- Card 1 in stock -->
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Heirloom Tomatoes (1 lb)</h3>
+            <div class="meta"><span class="origin">Green Fork Farm</span><span class="price">$4.50</span></div>
+            <small>Harvested: Feb 7</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <!-- Card 2 limited -->
+        <article class="card">
+          <div class="card-media">
+            <span class="badge limited">Limited</span>
+          </div>
+          <div class="card-body">
+            <h3>Pasture Eggs (12)</h3>
+            <div class="meta"><span class="origin">Willow Ridge</span><span class="price">$6.00</span></div>
+            <small>Collected: Feb 8</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <!-- Card 3 out of stock -->
+        <article class="card" aria-disabled="true">
+          <div class="card-media" style="filter: grayscale(0.2); opacity: 0.7;">
+            <span class="badge out">Out of stock</span>
+          </div>
+          <div class="card-body">
+            <h3>Strawberries (1 lb)</h3>
+            <div class="meta"><span class="origin">Sunvale Co-op</span><span class="price">$5.50</span></div>
+            <small>Harvested: Feb 6</small>
+            <div class="actions-row">
+              <button class="btn secondary" disabled>Unavailable</button>
+            </div>
+          </div>
+        </article>
+        <!-- Card 4 in stock -->
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Baby Kale (8 oz)</h3>
+            <div class="meta"><span class="origin">Cedar Lane</span><span class="price">$3.25</span></div>
+            <small>Harvested: Feb 7</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <!-- Row 2 -->
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Rainbow Carrots (1 lb)</h3>
+            <div class="meta"><span class="origin">Hollow Creek</span><span class="price">$3.80</span></div>
+            <small>Harvested: Feb 7</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-media">
+            <span class="badge limited">Limited</span>
+          </div>
+          <div class="card-body">
+            <h3>Goat Cheese (6 oz)</h3>
+            <div class="meta"><span class="origin">Silver Meadow</span><span class="price">$7.75</span></div>
+            <small>Batch: Feb 5</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" aria-disabled="true">
+          <div class="card-media" style="filter: grayscale(0.2); opacity: 0.7;">
+            <span class="badge out">Out of stock</span>
+          </div>
+          <div class="card-body">
+            <h3>Sweet Corn (4 ears)</h3>
+            <div class="meta"><span class="origin">Prairie Bend</span><span class="price">$4.20</span></div>
+            <small>Harvested: Feb 4</small>
+            <div class="actions-row">
+              <button class="btn secondary" disabled>Unavailable</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Blueberries (6 oz)</h3>
+            <div class="meta"><span class="origin">Riverlight Farm</span><span class="price">$4.90</span></div>
+            <small>Harvested: Feb 8</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Row 3 -->
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Russet Potatoes (2 lb)</h3>
+            <div class="meta"><span class="origin">Stonepath</span><span class="price">$3.60</span></div>
+            <small>Harvested: Feb 7</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-media">
+            <span class="badge limited">Limited</span>
+          </div>
+          <div class="card-body">
+            <h3>Greek Yogurt (16 oz)</h3>
+            <div class="meta"><span class="origin">Oak & Vale</span><span class="price">$5.40</span></div>
+            <small>Batch: Feb 6</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Spinach (8 oz)</h3>
+            <div class="meta"><span class="origin">Harbor Fields</span><span class="price">$3.10</span></div>
+            <small>Harvested: Feb 8</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" aria-disabled="true">
+          <div class="card-media" style="filter: grayscale(0.2); opacity: 0.7;">
+            <span class="badge out">Out of stock</span>
+          </div>
+          <div class="card-body">
+            <h3>Raspberries (6 oz)</h3>
+            <div class="meta"><span class="origin">Hillcrest Co-op</span><span class="price">$5.90</span></div>
+            <small>Harvested: Feb 6</small>
+            <div class="actions-row">
+              <button class="btn secondary" disabled>Unavailable</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Row 4 -->
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Asparagus (1 lb)</h3>
+            <div class="meta"><span class="origin">Meadowlane</span><span class="price">$5.10</span></div>
+            <small>Harvested: Feb 7</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-media">
+            <span class="badge limited">Limited</span>
+          </div>
+          <div class="card-body">
+            <h3>Almond Milk (32 oz)</h3>
+            <div class="meta"><span class="origin">Clear Brook</span><span class="price">$4.30</span></div>
+            <small>Batch: Feb 8</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-media">
+            <span class="badge">Picked this week</span>
+          </div>
+          <div class="card-body">
+            <h3>Mixed Lettuce (10 oz)</h3>
+            <div class="meta"><span class="origin">Elm Grove</span><span class="price">$3.70</span></div>
+            <small>Harvested: Feb 8</small>
+            <div class="actions-row">
+              <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+              <button class="btn primary add-to-cart">Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" aria-disabled="true">
+          <div class="card-media" style="filter: grayscale(0.2); opacity: 0.7;">
+            <span class="badge out">Out of stock</span>
+          </div>
+          <div class="card-body">
+            <h3>Avocados (2 ct)</h3>
+            <div class="meta"><span class="origin">North Grove</span><span class="price">$3.80</span></div>
+            <small>Harvested: Feb 5</small>
+            <div class="actions-row">
+              <button class="btn secondary" disabled>Unavailable</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Product detail with provenance -->
+    <section id="product" class="section">
+      <div class="section-header"><div><h2>Sample product detail</h2><p>Provenance-first layout with scannable proof points.</p></div></div>
+      <div class="product-detail">
+        <div class="product-image" aria-hidden="true"></div>
+        <div class="product-panel">
+          <h3>Raw Wildflower Honey (16 oz)</h3>
+          <p class="meta"><span class="origin">Blue Barn Apiary</span><span class="price">$12.00</span></p>
+          <p>Unfiltered, small-batch honey from local wildflowers. Naturally crystallizes.</p>
+          <div class="actions" style="margin-top: 10px; display:flex; gap:10px;">
+            <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+            <button class="btn primary add-to-cart">Add to cart</button>
+            <button class="btn secondary">Meet the farmer</button>
+          </div>
+          <div class="provenance">
+            <h3 style="font-family: 'Inter'; font-size: 1rem;">From the farm</h3>
+            <div class="prov-list">
+              <div class="prov-item">
+                <svg class="prov-ico" viewBox="0 0 24 24" fill="none"><path d="M5 13l7-10 7 10v7a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.5"/></svg>
+                <div><strong>Origin:</strong> Blue Barn Apiary, Driftwood, TX</div>
+              </div>
+              <div class="prov-item">
+                <svg class="prov-ico" viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.5"/></svg>
+                <div><strong>Batch/Harvest:</strong> Batch #BB-2402 · Jan 28</div>
+              </div>
+              <div class="prov-item">
+                <svg class="prov-ico" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M12 3v18" stroke="currentColor" stroke-width="1.5"/></svg>
+                <div><strong>Delivery window:</strong> 2–3 days in Austin metro</div>
+              </div>
+              <div class="prov-item">
+                <svg class="prov-ico" viewBox="0 0 24 24" fill="none"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM2 22a10 10 0 0 1 20 0" stroke="currentColor" stroke-width="1.5"/></svg>
+                <div><strong>Farmer:</strong> <a href="#">Sofia Lane</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checkout summary -->
+    <section id="checkout" class="section">
+      <div class="section-header"><div><h2>Checkout summary</h2><p>Carousel on the left, order summary on the right.</p></div></div>
+      <div class="checkout-wrap">
+        <!-- Left: simple carousel -->
+        <div class="carousel" id="carousel">
+          <div class="slides" id="slides">
+            <div class="slide">Heirloom Tomatoes</div>
+            <div class="slide">Pasture Eggs</div>
+            <div class="slide">Baby Kale</div>
+          </div>
+          <button class="c-btn c-prev" aria-label="Previous image" id="prevBtn"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button>
+          <button class="c-btn c-next" aria-label="Next image" id="nextBtn"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button>
+          <div class="carousel-dots" id="dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <!-- Right: full order summary -->
+        <div class="summary" aria-label="Order summary">
+          <h3 style="font-family: 'Inter'; font-size: 1.05rem; margin-bottom: 8px;">Items</h3>
+          <div class="row"><span>Heirloom Tomatoes · 1 × $4.50</span><span>$4.50</span></div>
+          <div class="row"><span>Pasture Eggs · 2 × $6.00</span><span>$12.00</span></div>
+          <div class="row"><span>Baby Kale · 1 × $3.25</span><span>$3.25</span></div>
+          <div class="row"><span>Greek Yogurt · 1 × $5.40</span><span>$5.40</span></div>
+          <hr style="border:none; border-top:1px solid var(--border); margin:10px 0;"/>
+          <div class="row"><span>Subtotal</span><span>$25.15</span></div>
+          <div class="row"><span>Local delivery</span><span>$4.00</span></div>
+          <div class="row"><span>Loyalty discount</span><span>−$2.00</span></div>
+          <div class="row total"><span>Total</span><span>$27.15</span></div>
+          <div style="margin-top: 12px; display:flex; gap:10px;">
+            <button class="btn primary">Pay now</button>
+            <button class="btn secondary">Back to cart</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">© 2026 FreeMarket — Sample UI preview</div>
+  </footer>
+
+  <div class="drawer-backdrop" id="backdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Cart drawer">
+    <div class="drawer-header">
+      <strong>Your cart</strong>
+      <button class="btn ghost" id="closeCart">Close</button>
+    </div>
+    <div class="drawer-body">
+      <div class="cart-item">
+        <div class="cart-thumb"></div>
+        <div>
+          <div class="cart-line"><strong>Heirloom Tomatoes</strong><span>$4.50</span></div>
+          <small class="origin">Green Fork Farm</small>
+          <div class="actions-row" style="margin-top:6px;">
+            <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="1" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+            <button class="btn ghost">Remove</button>
+          </div>
+        </div>
+        <span></span>
+      </div>
+      <div class="cart-item">
+        <div class="cart-thumb"></div>
+        <div>
+          <div class="cart-line"><strong>Baby Kale</strong><span>$3.25</span></div>
+          <small class="origin">Cedar Lane</small>
+          <div class="actions-row" style="margin-top:6px;">
+            <div class="qty"><button aria-label="Decrease">−</button><input type="text" value="2" aria-label="Quantity"/><button aria-label="Increase">+</button></div>
+            <button class="btn ghost">Remove</button>
+          </div>
+        </div>
+        <span></span>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div class="summary">
+        <div class="row"><span>Items</span><span id="sumItems">$10.00</span></div>
+        <div class="row"><span>Delivery</span><span>$4.00</span></div>
+        <div class="row total"><span>Total</span><span id="sumTotal">$14.00</span></div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a class="btn primary" href="#checkout">Pay now</a>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    // Minimal interactivity for demo purposes only
+    const openBtn = document.getElementById('openCart');
+    const closeBtn = document.getElementById('closeCart');
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('backdrop');
+
+    function openDrawer() {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+    }
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+    }
+    openBtn?.addEventListener('click', openDrawer);
+    closeBtn?.addEventListener('click', closeDrawer);
+    backdrop?.addEventListener('click', closeDrawer);
+
+    // Add-to-cart demo
+    document.querySelectorAll('.add-to-cart').forEach(btn => btn.addEventListener('click', openDrawer));
+
+    // Quantity controls demo (no real pricing calc except cart footer)
+    function recalc() {
+      // Very basic sum based on hardcoded item totals for the demo
+      const items = 4.5 * 1 + 3.25 * 2; // matches the two cart lines default
+      document.getElementById('sumItems').textContent = `$${items.toFixed(2)}`;
+      document.getElementById('sumTotal').textContent = `$${(items + 4).toFixed(2)}`;
+    }
+    recalc();
+
+    // Simple carousel logic
+    (function(){
+      const slides = document.getElementById('slides');
+      const dots = Array.from(document.querySelectorAll('#dots .dot'));
+      const prev = document.getElementById('prevBtn');
+      const next = document.getElementById('nextBtn');
+      if (!slides || !prev || !next) return;
+      let idx = 0;
+      const count = slides.children.length;
+      function update(){
+        slides.style.transform = `translateX(-${idx * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+      prev.addEventListener('click', () => { idx = (idx - 1 + count) % count; update(); });
+      next.addEventListener('click', () => { idx = (idx + 1) % count; update(); });
+    })();
+  </script>
+</body>
+</html>
