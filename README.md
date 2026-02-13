@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FreeMarket Shop
 
-## Getting Started
+B2C e-commerce platform for a Texas-based organic farm to sell directly to customers online.
 
-First, run the development server:
+## What This Project Does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+FreeMarket Shop provides an owned online sales channel for browsing products, placing orders, and managing fulfillment, while giving the business full control over catalog, pricing, inventory, customers, and operations.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Core product goals:
+- Enable direct-to-consumer organic food ordering in Texas
+- Support modern shopping flow: catalog, cart, checkout, account
+- Support operations: product/inventory management and shipment tracking
+- Support growth through loyalty incentives and repeat purchasing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technology Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Frontend: React + React Router
+- Backend platform: Supabase (Postgres, Auth, Storage, APIs)
+- UI: Tailwind CSS + shadcn/ui
+- Runtime/tooling: Bun
+- Payments: Stripe (cards) + PayPal
+- Integrations: External shipment service API (shipment creation/tracking data)
 
-## Learn More
+## MVP Scope (High Level)
 
-To learn more about Next.js, take a look at the following resources:
+- Customer: browse shop, view product details (including harvest/batch transparency fields), manage cart, authenticate (email/Google), checkout, view orders and shipment status
+- Admin: manage products, categories, variants, stock, users, and shipment statuses
+- Loyalty v1: tier-based and first-purchase discounts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## For reference
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `docs/`
