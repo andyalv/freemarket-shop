@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --fm-color-clay: #7f5539;
+  --fm-color-tan: #a68a64;
+  --fm-color-cream: #ede0d4;
+  --fm-color-sage: #656d4a;
+  --fm-color-forest: #414833;
+  --fm-color-garden-cta: #15803d;
+  --fm-color-error: #b94a48;
+
+  --fm-gradient-cta: linear-gradient(135deg, #7f5539 0%, #a68a64 60%, #656d4a 100%);
+  --fm-gradient-hero: linear-gradient(
+    135deg,
+    rgba(111, 160, 108, 0.25) 0%,
+    rgba(102, 109, 74, 0.25) 100%
+  );
+
+  --fm-bg: var(--fm-color-cream);
+  --fm-surface: #ffffff;
+  --fm-text: var(--fm-color-forest);
+  --fm-text-muted: var(--fm-color-sage);
+  --fm-border: rgba(65, 72, 51, 0.15);
+
+  --background: var(--fm-bg);
+  --foreground: var(--fm-text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-fm-clay: var(--fm-color-clay);
+  --color-fm-tan: var(--fm-color-tan);
+  --color-fm-cream: var(--fm-color-cream);
+  --color-fm-sage: var(--fm-color-sage);
+  --color-fm-forest: var(--fm-color-forest);
+  --color-fm-garden-cta: var(--fm-color-garden-cta);
+  --color-fm-error: var(--fm-color-error);
+  --color-fm-surface: var(--fm-surface);
+  --color-fm-border: var(--fm-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+}
+
+.fm-container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.fm-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(237, 224, 212, 0.8);
+  backdrop-filter: saturate(160%) blur(8px);
+  border-bottom: 1px solid var(--fm-border);
+}
+
+.fm-brand-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--fm-gradient-cta);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.fm-nav-link {
+  color: var(--fm-text);
+  opacity: 0.9;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.fm-nav-link:hover {
+  opacity: 1;
+}
+
+.fm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.fm-btn-primary {
+  background: var(--fm-color-clay);
+  color: #fff;
+}
+
+.fm-btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.fm-btn-secondary {
+  background: transparent;
+  color: var(--fm-text);
+  border-color: var(--fm-color-tan);
+}
+
+.fm-btn-secondary:hover {
+  background: var(--fm-color-tan);
+  color: #fff;
 }
