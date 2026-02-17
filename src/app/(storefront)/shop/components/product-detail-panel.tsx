@@ -64,7 +64,7 @@ export function ProductDetailPanel({
               <button
                 type="button"
                 className="px-3 py-2 text-sm font-semibold"
-                onClick={() => onDecrement(product.id)}
+                onClick={function() { return onDecrement(product.id) }}
                 aria-label={`Decrease ${product.name}`}
               >
                 <MdRemove size={16} />
@@ -74,14 +74,14 @@ export function ProductDetailPanel({
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={String(quantity)}
-                onChange={(event) => onQuantityInput(product.id, event.target.value)}
+                onChange={function(event) { return onQuantityInput(product.id, event.target.value) }}
                 aria-label={`Quantity for ${product.name}`}
                 className="h-9 w-12 border-x border-[var(--fm-border)] bg-transparent text-center text-sm font-semibold outline-none"
               />
               <button
                 type="button"
                 className="px-3 py-2 text-sm font-semibold"
-                onClick={() => onIncrement(product.id)}
+                onClick={function() { return onIncrement(product.id) }}
                 aria-label={`Increase ${product.name}`}
               >
                 <MdAdd size={16} />

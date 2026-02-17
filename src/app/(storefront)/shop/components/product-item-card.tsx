@@ -57,7 +57,7 @@ export function ProductItemCard({
     <article
       role="button"
       tabIndex={0}
-      onClick={() => onSelect(product.id)}
+      onClick={function() { return onSelect(product.id) }}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
@@ -88,8 +88,8 @@ export function ProductItemCard({
 
         <div
           className="mt-auto flex items-center justify-end gap-2 pt-2"
-          onClick={(event) => event.stopPropagation()}
-          onKeyDown={(event) => event.stopPropagation()}
+          onClick={function(event) { return event.stopPropagation() }}
+          onKeyDown={function(event) { return event.stopPropagation() }}
         >
           {isOut ? (
             <button type="button" className="fm-btn fm-btn-secondary w-full" disabled>
@@ -99,7 +99,7 @@ export function ProductItemCard({
             <button
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--fm-color-clay)] bg-[var(--fm-color-clay)] text-lg font-bold text-white"
-              onClick={() => onIncrement(product.id)}
+              onClick={function() { return onIncrement(product.id) }}
               aria-label={`Add ${product.name}`}
             >
               <MdAdd size={20} />
