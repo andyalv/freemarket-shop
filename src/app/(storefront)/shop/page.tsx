@@ -1,14 +1,10 @@
 
-type ProductStatus = "fresh" | "limited" | "out";
+"use client";
 
-type Product = {
-  id: number;
-  name: string;
-  farm: string;
-  harvestLabel: string;
-  price: string;
-  status: ProductStatus;
-};
+import { useState } from "react";
+import { ProductItemCard, type Product } from "./components/product-item-card";
+import { ProductDetailPanel } from "./components/product-detail-panel";
+import { QuickCheckoutDrawer } from "./components/quick-checkout-drawer";
 
 const products: Product[] = [
   {
@@ -16,82 +12,219 @@ const products: Product[] = [
     name: "Heirloom Tomatoes (1 lb)",
     farm: "Green Fork Farm",
     harvestLabel: "Harvested: Feb 7",
-    price: "$4.50",
+    price: 4.5,
     status: "fresh",
+    description:
+      "Rich, colorful tomatoes grown in mineral soil and picked at peak ripeness for salads and roasting.",
+    origin: "Green Fork Farm, Fredericksburg, TX",
+    batchHarvest: "Harvest lot GF-2402 · Feb 7",
+    deliveryWindow: "2-3 days in Austin metro",
+    farmerName: "Maya Rowan",
   },
   {
     id: 2,
     name: "Pasture Eggs (12)",
     farm: "Willow Ridge",
     harvestLabel: "Collected: Feb 8",
-    price: "$6.00",
+    price: 6,
     status: "limited",
+    description:
+      "Pasture-raised eggs with deep yolks and clean flavor from a small mixed-flock operation.",
+    origin: "Willow Ridge, Bastrop, TX",
+    batchHarvest: "Collection run WR-208 · Feb 8",
+    deliveryWindow: "2-3 days in Austin metro",
+    farmerName: "Eli Mercer",
   },
   {
     id: 3,
     name: "Strawberries (1 lb)",
     farm: "Sunvale Co-op",
     harvestLabel: "Harvested: Feb 6",
-    price: "$5.50",
+    price: 5.5,
     status: "out",
+    description: "Early-season berries with bright sweetness and a soft finish.",
+    origin: "Sunvale Co-op, Elgin, TX",
+    batchHarvest: "Harvest lot SV-114 · Feb 6",
+    deliveryWindow: "Next week",
+    farmerName: "Ana Solis",
   },
   {
     id: 4,
     name: "Baby Kale (8 oz)",
     farm: "Cedar Lane",
     harvestLabel: "Harvested: Feb 7",
-    price: "$3.25",
+    price: 3.25,
     status: "fresh",
+    description:
+      "Tender baby kale with a mild bite, cleaned and packed same day for quick weeknight meals.",
+    origin: "Cedar Lane, Pflugerville, TX",
+    batchHarvest: "Harvest lot CL-522 · Feb 7",
+    deliveryWindow: "2-3 days in Austin metro",
+    farmerName: "Noah Pike",
   },
   {
     id: 5,
     name: "Rainbow Carrots (1 lb)",
     farm: "Hollow Creek",
     harvestLabel: "Harvested: Feb 7",
-    price: "$3.80",
+    price: 3.8,
     status: "fresh",
+    description:
+      "Sweet, crunchy heirloom carrot mix with natural color variation and strong earthy aroma.",
+    origin: "Hollow Creek, Manor, TX",
+    batchHarvest: "Harvest lot HC-309 · Feb 7",
+    deliveryWindow: "2-3 days in Austin metro",
+    farmerName: "Leah Benton",
   },
   {
     id: 6,
     name: "Goat Cheese (6 oz)",
     farm: "Silver Meadow",
     harvestLabel: "Batch: Feb 5",
-    price: "$7.75",
+    price: 7.75,
     status: "limited",
+    description:
+      "Small-batch chèvre with a creamy texture and subtle tang, made from pasture-fed milk.",
+    origin: "Silver Meadow Creamery, Dripping Springs, TX",
+    batchHarvest: "Cheese batch SM-2405 · Feb 5",
+    deliveryWindow: "2-3 days in Austin metro",
+    farmerName: "Ruth Calder",
   },
   {
     id: 7,
     name: "Blueberries (6 oz)",
     farm: "Riverlight Farm",
     harvestLabel: "Harvested: Feb 8",
-    price: "$4.90",
+    price: 4.9,
     status: "fresh",
+    description:
+      "Firm, sweet berries harvested in cool morning hours to preserve texture and flavor.",
+    origin: "Riverlight Farm, Lockhart, TX",
+    batchHarvest: "Harvest lot RL-420 · Feb 8",
+    deliveryWindow: "2-3 days in Austin metro",
+    farmerName: "Isaac Wynn",
   },
   {
     id: 8,
     name: "Sweet Corn (4 ears)",
     farm: "Prairie Bend",
     harvestLabel: "Harvested: Feb 4",
-    price: "$4.20",
+    price: 4.2,
     status: "out",
+    description: "Fresh sweet corn picked at sugar peak for grilling and summer salads.",
+    origin: "Prairie Bend, Taylor, TX",
+    batchHarvest: "Harvest lot PB-197 · Feb 4",
+    deliveryWindow: "Next week",
+    farmerName: "Grace Holloway",
   },
 ];
 
-const badgeStyles: Record<ProductStatus, string> = {
-  fresh:
-    "border border-[rgba(21,128,61,0.25)] bg-[rgba(21,128,61,0.12)] text-[var(--fm-color-garden-cta)]",
-  limited:
-    "border border-[rgba(166,138,100,0.38)] bg-[rgba(166,138,100,0.18)] text-[var(--fm-color-clay)]",
-  out: "border border-[rgba(185,74,72,0.35)] bg-[rgba(185,74,72,0.14)] text-[#8b2f2d]",
-};
+const productById = new Map(products.map((product) => [product.id, product]));
 
-const badgeLabels: Record<ProductStatus, string> = {
-  fresh: "Picked this week",
-  limited: "Limited",
-  out: "Out of stock",
-};
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 export default function Shop() {
+  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+
+  const formatCurrency = (value: number) => currencyFormatter.format(value);
+
+  const setProductQuantity = (productId: number, nextQuantity: number) => {
+    if (!Number.isInteger(nextQuantity) || nextQuantity < 0) {
+      return;
+    }
+
+    const product = productById.get(productId);
+    if (!product || product.status === "out") {
+      return;
+    }
+
+    setQuantities((current) => {
+      if (nextQuantity === 0) {
+        if (!(productId in current)) {
+          return current;
+        }
+
+        const next = { ...current };
+        delete next[productId];
+        return next;
+      }
+
+      return { ...current, [productId]: nextQuantity };
+    });
+  };
+
+  const increment = (productId: number) => {
+    setQuantities((current) => {
+      const product = productById.get(productId);
+      if (!product || product.status === "out") {
+        return current;
+      }
+
+      return { ...current, [productId]: (current[productId] ?? 0) + 1 };
+    });
+  };
+
+  const decrement = (productId: number) => {
+    setQuantities((current) => {
+      const product = productById.get(productId);
+      if (!product || product.status === "out") {
+        return current;
+      }
+
+      const nextQuantity = Math.max((current[productId] ?? 0) - 1, 0);
+      if (nextQuantity === 0) {
+        if (!(productId in current)) {
+          return current;
+        }
+
+        const next = { ...current };
+        delete next[productId];
+        return next;
+      }
+
+      return { ...current, [productId]: nextQuantity };
+    });
+  };
+
+  const onQuantityInput = (productId: number, rawValue: string) => {
+    if (!/^\d*$/.test(rawValue)) {
+      return;
+    }
+
+    if (rawValue === "") {
+      setProductQuantity(productId, 0);
+      return;
+    }
+
+    const nextQuantity = Number(rawValue);
+    setProductQuantity(productId, nextQuantity);
+  };
+
+  const cartItems = products.filter((product) => (quantities[product.id] ?? 0) > 0);
+  const totalItems = cartItems.reduce((sum, product) => sum + (quantities[product.id] ?? 0), 0);
+  const subtotal = cartItems.reduce(
+    (sum, product) => sum + product.price * (quantities[product.id] ?? 0),
+    0,
+  );
+  const delivery = subtotal > 0 ? 4 : 0;
+  const total = subtotal + delivery;
+  const clearCart = () => setQuantities({});
+  const selectedProduct =
+    selectedProductId === null ? null : (productById.get(selectedProductId) ?? null);
+
+  const onProductSelect = (productId: number) => {
+    setSelectedProductId(productId);
+  };
+
+  const onDetailClose = () => {
+    setSelectedProductId(null);
+  };
+
   return (
     <div id="top">
 
@@ -143,61 +276,54 @@ export default function Shop() {
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {products.map((product) => {
-            const isOut = product.status === "out";
+            const quantity = quantities[product.id] ?? 0;
 
             return (
-              <article
+              <ProductItemCard
                 key={product.id}
-                className="flex flex-col overflow-hidden rounded-[14px] border border-[var(--fm-border)] bg-[var(--fm-surface)] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
-              >
-                <div
-                  className={`relative aspect-[4/3] border-b border-[var(--fm-border)] bg-[var(--fm-color-cream)] p-3 ${
-                    isOut ? "opacity-70 grayscale-[0.2]" : ""
-                  }`}
-                >
-                  <span
-                    className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${badgeStyles[product.status]}`}
-                  >
-                    {badgeLabels[product.status]}
-                  </span>
-                </div>
-
-                <div className="flex flex-1 flex-col gap-2 p-4">
-                  <h3 className="text-lg font-bold leading-snug">{product.name}</h3>
-                  <div className="flex items-center justify-between gap-2 text-sm">
-                    <span className="font-semibold text-[var(--fm-text-muted)]">{product.farm}</span>
-                    <span className="font-bold">{product.price}</span>
-                  </div>
-                  <p className="text-sm text-[var(--fm-text-muted)]">{product.harvestLabel}</p>
-
-                  <div className="mt-2 flex items-center gap-2">
-                    {isOut ? (
-                      <button type="button" className="fm-btn fm-btn-secondary w-full" disabled>
-                        Unavailable
-                      </button>
-                    ) : (
-                      <>
-                        <div className="inline-flex items-center overflow-hidden rounded-[10px] border border-[var(--fm-border)]">
-                          <button type="button" className="px-3 py-2 text-sm" aria-label="Decrease">
-                            -
-                          </button>
-                          <span className="px-3 py-2 text-sm">1</span>
-                          <button type="button" className="px-3 py-2 text-sm" aria-label="Increase">
-                            +
-                          </button>
-                        </div>
-                        <button type="button" className="fm-btn fm-btn-primary grow">
-                          Add to cart
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </article>
+                product={product}
+                quantity={quantity}
+                onIncrement={increment}
+                onDecrement={decrement}
+                onQuantityInput={onQuantityInput}
+                formatCurrency={formatCurrency}
+                onSelect={onProductSelect}
+              />
             );
           })}
         </div>
+
       </section>
+
+      {selectedProduct ? (
+        <ProductDetailPanel
+          product={selectedProduct}
+          quantity={quantities[selectedProduct.id] ?? 0}
+          isVisible
+          onIncrement={increment}
+          onDecrement={decrement}
+          onQuantityInput={onQuantityInput}
+          onClose={onDetailClose}
+          formatCurrency={formatCurrency}
+        />
+      ) : null}
+
+      <QuickCheckoutDrawer
+        isOpen={isCartOpen}
+        cartItems={cartItems}
+        quantities={quantities}
+        totalItems={totalItems}
+        subtotal={subtotal}
+        delivery={delivery}
+        total={total}
+        onOpen={() => setIsCartOpen(true)}
+        onClose={() => setIsCartOpen(false)}
+        onClearCart={clearCart}
+        onIncrement={increment}
+        onDecrement={decrement}
+        onQuantityInput={onQuantityInput}
+        formatCurrency={formatCurrency}
+      />
     </div>
   );
 }
