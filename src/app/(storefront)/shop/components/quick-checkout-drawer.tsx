@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MdAdd, MdClose, MdDeleteOutline, MdRemove, MdShoppingCart } from "react-icons/md";
 import type { Product } from "./product-item-card";
+import { formatCurrency } from "../utils/formatters";
 
 type QuickCheckoutDrawerProps = {
   isOpen: boolean;
   cartItems: Product[];
-  quantities: Record<number, number>;
+  quantities: Record<string, number>;
   totalItems: number;
   subtotal: number;
   delivery: number;
@@ -15,10 +16,9 @@ type QuickCheckoutDrawerProps = {
   onOpen: () => void;
   onClose: () => void;
   onClearCart: () => void;
-  onIncrement: (productId: number) => void;
-  onDecrement: (productId: number) => void;
-  onQuantityInput: (productId: number, rawValue: string) => void;
-  formatCurrency: (value: number) => string;
+  onIncrement: (productId: string) => void;
+  onDecrement: (productId: string) => void;
+  onQuantityInput: (productId: string, rawValue: string) => void;
 };
 
 export function QuickCheckoutDrawer({
@@ -35,8 +35,9 @@ export function QuickCheckoutDrawer({
   onIncrement,
   onDecrement,
   onQuantityInput,
-  formatCurrency,
 }: QuickCheckoutDrawerProps) {
+  const router = useRouter();
+
   return (
     <>
       {!isOpen ? (
@@ -46,6 +47,11 @@ export function QuickCheckoutDrawer({
           aria-label="Open cart"
           className="fixed right-4 bottom-4 z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--fm-color-clay)] bg-[var(--fm-color-clay)] text-white shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
         >
+          {totalItems > 0 ? (
+            <span className="absolute -top-1 -right-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white shadow-sm">
+              {totalItems}
+            </span>
+          ) : null}
           <MdShoppingCart size={20} />
         </button>
       ) : null}
@@ -162,23 +168,21 @@ export function QuickCheckoutDrawer({
               <span>{formatCurrency(total)}</span>
             </div>
           </div>
-          <Link
-            href="/cart"
-            aria-disabled={cartItems.length === 0}
-            onClick={(event) => {
-              if (cartItems.length === 0) {
-                event.preventDefault();
-              }
+          <button
+            type="button"
+            disabled={cartItems.length === 0}
+            onClick={() => {
+              onClose();
+              router.push("/cart");
             }}
             className={`fm-btn fm-btn-primary mt-3 w-full ${
               cartItems.length === 0 ? "pointer-events-none cursor-not-allowed opacity-60" : ""
             }`}
           >
-            Pay now
-          </Link>
+            Checkout
+          </button>
         </div>
       </aside>
     </>
   );
 }
-

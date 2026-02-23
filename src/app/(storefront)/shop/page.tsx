@@ -1,139 +1,90 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ProductItemCard, type Product } from "./components/product-item-card";
 import { ProductDetailPanel } from "./components/product-detail-panel";
 import { QuickCheckoutDrawer } from "./components/quick-checkout-drawer";
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Heirloom Tomatoes (1 lb)",
-    farm: "Green Fork Farm",
-    harvestLabel: "Harvested: Feb 7",
-    price: 4.5,
-    status: "fresh",
-    description:
-      "Rich, colorful tomatoes grown in mineral soil and picked at peak ripeness for salads and roasting.",
-    origin: "Green Fork Farm, Fredericksburg, TX",
-    batchHarvest: "Harvest lot GF-2402 · Feb 7",
-    deliveryWindow: "2-3 days in Austin metro",
-    farmerName: "Maya Rowan",
-  },
-  {
-    id: 2,
-    name: "Pasture Eggs (12)",
-    farm: "Willow Ridge",
-    harvestLabel: "Collected: Feb 8",
-    price: 6,
-    status: "limited",
-    description:
-      "Pasture-raised eggs with deep yolks and clean flavor from a small mixed-flock operation.",
-    origin: "Willow Ridge, Bastrop, TX",
-    batchHarvest: "Collection run WR-208 · Feb 8",
-    deliveryWindow: "2-3 days in Austin metro",
-    farmerName: "Eli Mercer",
-  },
-  {
-    id: 3,
-    name: "Strawberries (1 lb)",
-    farm: "Sunvale Co-op",
-    harvestLabel: "Harvested: Feb 6",
-    price: 5.5,
-    status: "out",
-    description: "Early-season berries with bright sweetness and a soft finish.",
-    origin: "Sunvale Co-op, Elgin, TX",
-    batchHarvest: "Harvest lot SV-114 · Feb 6",
-    deliveryWindow: "Next week",
-    farmerName: "Ana Solis",
-  },
-  {
-    id: 4,
-    name: "Baby Kale (8 oz)",
-    farm: "Cedar Lane",
-    harvestLabel: "Harvested: Feb 7",
-    price: 3.25,
-    status: "fresh",
-    description:
-      "Tender baby kale with a mild bite, cleaned and packed same day for quick weeknight meals.",
-    origin: "Cedar Lane, Pflugerville, TX",
-    batchHarvest: "Harvest lot CL-522 · Feb 7",
-    deliveryWindow: "2-3 days in Austin metro",
-    farmerName: "Noah Pike",
-  },
-  {
-    id: 5,
-    name: "Rainbow Carrots (1 lb)",
-    farm: "Hollow Creek",
-    harvestLabel: "Harvested: Feb 7",
-    price: 3.8,
-    status: "fresh",
-    description:
-      "Sweet, crunchy heirloom carrot mix with natural color variation and strong earthy aroma.",
-    origin: "Hollow Creek, Manor, TX",
-    batchHarvest: "Harvest lot HC-309 · Feb 7",
-    deliveryWindow: "2-3 days in Austin metro",
-    farmerName: "Leah Benton",
-  },
-  {
-    id: 6,
-    name: "Goat Cheese (6 oz)",
-    farm: "Silver Meadow",
-    harvestLabel: "Batch: Feb 5",
-    price: 7.75,
-    status: "limited",
-    description:
-      "Small-batch chèvre with a creamy texture and subtle tang, made from pasture-fed milk.",
-    origin: "Silver Meadow Creamery, Dripping Springs, TX",
-    batchHarvest: "Cheese batch SM-2405 · Feb 5",
-    deliveryWindow: "2-3 days in Austin metro",
-    farmerName: "Ruth Calder",
-  },
-  {
-    id: 7,
-    name: "Blueberries (6 oz)",
-    farm: "Riverlight Farm",
-    harvestLabel: "Harvested: Feb 8",
-    price: 4.9,
-    status: "fresh",
-    description:
-      "Firm, sweet berries harvested in cool morning hours to preserve texture and flavor.",
-    origin: "Riverlight Farm, Lockhart, TX",
-    batchHarvest: "Harvest lot RL-420 · Feb 8",
-    deliveryWindow: "2-3 days in Austin metro",
-    farmerName: "Isaac Wynn",
-  },
-  {
-    id: 8,
-    name: "Sweet Corn (4 ears)",
-    farm: "Prairie Bend",
-    harvestLabel: "Harvested: Feb 4",
-    price: 4.2,
-    status: "out",
-    description: "Fresh sweet corn picked at sugar peak for grilling and summer salads.",
-    origin: "Prairie Bend, Taylor, TX",
-    batchHarvest: "Harvest lot PB-197 · Feb 4",
-    deliveryWindow: "Next week",
-    farmerName: "Grace Holloway",
-  },
-];
-
-const productById = new Map(products.map((product) => [product.id, product]));
-
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+import {
+  entriesToQuantities,
+  quantitiesToEntries,
+  readCartEntries,
+  writeCartEntries,
+} from "./utils/cart-storage";
 
 export default function Shop() {
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const DETAIL_ANIMATION_MS = 300;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedDeliveryWindow, setSelectedDeliveryWindow] = useState("any");
+  const [quantities, setQuantities] = useState<Record<string, number>>(() =>
+    entriesToQuantities(readCartEntries()),
+  );
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
+  const closeDetailTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const productById = useMemo(
+    () => new Map(products.map((product) => [product.id, product])),
+    [products],
+  );
 
-  const formatCurrency = (value: number) => currencyFormatter.format(value);
+  useEffect(() => {
+    let isMounted = true;
 
-  const setProductQuantity = (productId: number, nextQuantity: number) => {
+    const loadProducts = async () => {
+      try {
+        setProductsLoading(true);
+        setProductsError(null);
+
+        const response = await fetch("/api/product");
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data: unknown = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error("Invalid API response");
+        }
+
+        if (isMounted) {
+          setProducts(data as Product[]);
+        }
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        setProductsError(error instanceof Error ? error.message : "Unable to load products");
+      } finally {
+        if (isMounted) {
+          setProductsLoading(false);
+        }
+      }
+    };
+
+    void loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    writeCartEntries(quantitiesToEntries(quantities));
+  }, [quantities]);
+
+  useEffect(() => {
+    return () => {
+      if (closeDetailTimerRef.current) {
+        clearTimeout(closeDetailTimerRef.current);
+      }
+    };
+  }, []);
+
+  const setProductQuantity = (productId: string, nextQuantity: number) => {
     if (!Number.isInteger(nextQuantity) || nextQuantity < 0) {
       return;
     }
@@ -158,7 +109,7 @@ export default function Shop() {
     });
   };
 
-  const increment = (productId: number) => {
+  const increment = (productId: string) => {
     setQuantities((current) => {
       const product = productById.get(productId);
       if (!product || product.status === "out") {
@@ -169,7 +120,7 @@ export default function Shop() {
     });
   };
 
-  const decrement = (productId: number) => {
+  const decrement = (productId: string) => {
     setQuantities((current) => {
       const product = productById.get(productId);
       if (!product || product.status === "out") {
@@ -191,7 +142,7 @@ export default function Shop() {
     });
   };
 
-  const onQuantityInput = (productId: number, rawValue: string) => {
+  const onQuantityInput = (productId: string, rawValue: string) => {
     if (!/^\d*$/.test(rawValue)) {
       return;
     }
@@ -206,6 +157,34 @@ export default function Shop() {
   };
 
   const cartItems = products.filter((product) => (quantities[product.id] ?? 0) > 0);
+  const categoryOptions = useMemo(
+    () =>
+      Array.from(new Set(products.map((product) => product.category)))
+        .filter(Boolean)
+        .sort(),
+    [products],
+  );
+  const deliveryWindowOptions = useMemo(
+    () =>
+      Array.from(new Set(products.map((product) => product.deliveryWindow)))
+        .filter(Boolean)
+        .sort(),
+    [products],
+  );
+  const filteredProducts = useMemo(
+    () =>
+      products.filter((product) => {
+        const matchesCategory =
+          selectedCategory === "all" ? true : product.category === selectedCategory;
+        const matchesDelivery =
+          selectedDeliveryWindow === "any"
+            ? true
+            : product.deliveryWindow === selectedDeliveryWindow;
+
+        return matchesCategory && matchesDelivery;
+      }),
+    [products, selectedCategory, selectedDeliveryWindow],
+  );
   const totalItems = cartItems.reduce((sum, product) => sum + (quantities[product.id] ?? 0), 0);
   const subtotal = cartItems.reduce(
     (sum, product) => sum + product.price * (quantities[product.id] ?? 0),
@@ -217,12 +196,27 @@ export default function Shop() {
   const selectedProduct =
     selectedProductId === null ? null : (productById.get(selectedProductId) ?? null);
 
-  const onProductSelect = (productId: number) => {
+  const onProductSelect = (productId: string) => {
+    if (closeDetailTimerRef.current) {
+      clearTimeout(closeDetailTimerRef.current);
+      closeDetailTimerRef.current = null;
+    }
+
     setSelectedProductId(productId);
+    setIsDetailVisible(true);
   };
 
   const onDetailClose = () => {
-    setSelectedProductId(null);
+    if (closeDetailTimerRef.current) {
+      clearTimeout(closeDetailTimerRef.current);
+      closeDetailTimerRef.current = null;
+    }
+
+    setIsDetailVisible(false);
+    closeDetailTimerRef.current = setTimeout(() => {
+      setSelectedProductId(null);
+      closeDetailTimerRef.current = null;
+    }, DETAIL_ANIMATION_MS);
   };
 
   return (
@@ -231,10 +225,7 @@ export default function Shop() {
       <section id="fresh" className="fm-container py-12">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-3xl font-bold">What&apos;s fresh this week</h2>
-            <p className="mt-2 text-[var(--fm-text-muted)]">
-              Hardcoded demo products based on the shop sample layout.
-            </p>
+            <h2 className="text-3xl font-bold">Shop</h2>
           </div>
         </div>
 
@@ -243,13 +234,19 @@ export default function Shop() {
             Category
             <select
               className="bg-transparent text-sm font-semibold outline-none"
-              defaultValue="All"
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
               aria-label="Category"
             >
-              <option>All</option>
-              <option>Vegetables</option>
-              <option>Fruits</option>
-              <option>Dairy</option>
+              <option value="all">All</option>
+              {categoryOptions.map((category) => (
+                <option key={category} value={category}>
+                  {category
+                    .split("-")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
+                </option>
+              ))}
             </select>
           </label>
 
@@ -257,41 +254,60 @@ export default function Shop() {
             Delivery window
             <select
               className="bg-transparent text-sm font-semibold outline-none"
-              defaultValue="Any"
+              value={selectedDeliveryWindow}
+              onChange={(event) => setSelectedDeliveryWindow(event.target.value)}
               aria-label="Delivery window"
             >
-              <option>Any</option>
-              <option>2-3 days</option>
-              <option>Next week</option>
+              <option value="any">Any</option>
+              {deliveryWindowOptions.map((window) => (
+                <option key={window} value={window}>
+                  {window}
+                </option>
+              ))}
             </select>
           </label>
 
           <button
             type="button"
+            onClick={() => {
+              setSelectedCategory("all");
+              setSelectedDeliveryWindow("any");
+            }}
+            disabled={selectedCategory === "all" && selectedDeliveryWindow === "any"}
             className="rounded-xl border border-[var(--fm-border)] px-4 py-2 text-sm font-semibold text-[var(--fm-text-muted)]"
           >
             Clear filters
           </button>
         </div>
 
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {products.map((product) => {
-            const quantity = quantities[product.id] ?? 0;
+        {productsLoading ? (
+          <p className="mt-6 text-sm text-[var(--fm-text-muted)]">Loading products...</p>
+        ) : productsError ? (
+          <p className="mt-6 text-sm text-[#8b2f2d]">Failed to load products: {productsError}</p>
+        ) : (
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            {filteredProducts.map((product) => {
+              const quantity = quantities[product.id] ?? 0;
 
-            return (
-              <ProductItemCard
-                key={product.id}
-                product={product}
-                quantity={quantity}
-                onIncrement={increment}
-                onDecrement={decrement}
-                onQuantityInput={onQuantityInput}
-                formatCurrency={formatCurrency}
-                onSelect={onProductSelect}
-              />
-            );
-          })}
-        </div>
+              return (
+                <ProductItemCard
+                  key={product.id}
+                  product={product}
+                  quantity={quantity}
+                  onIncrement={increment}
+                  onDecrement={decrement}
+                  onQuantityInput={onQuantityInput}
+                  onSelect={onProductSelect}
+                />
+              );
+            })}
+          </div>
+        )}
+        {!productsLoading && !productsError && filteredProducts.length === 0 ? (
+          <p className="mt-6 text-sm text-[var(--fm-text-muted)]">
+            No products match the selected filters.
+          </p>
+        ) : null}
 
       </section>
 
@@ -299,12 +315,11 @@ export default function Shop() {
         <ProductDetailPanel
           product={selectedProduct}
           quantity={quantities[selectedProduct.id] ?? 0}
-          isVisible
+          isVisible={isDetailVisible}
           onIncrement={increment}
           onDecrement={decrement}
           onQuantityInput={onQuantityInput}
           onClose={onDetailClose}
-          formatCurrency={formatCurrency}
         />
       ) : null}
 
@@ -322,8 +337,8 @@ export default function Shop() {
         onIncrement={increment}
         onDecrement={decrement}
         onQuantityInput={onQuantityInput}
-        formatCurrency={formatCurrency}
       />
     </div>
   );
 }
+

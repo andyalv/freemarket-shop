@@ -1,14 +1,16 @@
 "use client";
 
 import { MdAdd, MdRemove } from "react-icons/md";
+import { formatCurrency, formatHarvestDate } from "../utils/formatters";
 
 export type ProductStatus = "fresh" | "limited" | "out";
 
 export type Product = {
-  id: number;
+  id: string;
   name: string;
   farm: string;
-  harvestLabel: string;
+  category: string;
+  harvestDate: string;
   price: number;
   status: ProductStatus;
   description: string;
@@ -21,11 +23,10 @@ export type Product = {
 type ProductItemCardProps = {
   product: Product;
   quantity: number;
-  onIncrement: (productId: number) => void;
-  onDecrement: (productId: number) => void;
-  onQuantityInput: (productId: number, rawValue: string) => void;
-  formatCurrency: (value: number) => string;
-  onSelect: (productId: number) => void;
+  onIncrement: (productId: string) => void;
+  onDecrement: (productId: string) => void;
+  onQuantityInput: (productId: string, rawValue: string) => void;
+  onSelect: (productId: string) => void;
 };
 
 const badgeStyles: Record<ProductStatus, string> = {
@@ -48,7 +49,6 @@ export function ProductItemCard({
   onIncrement,
   onDecrement,
   onQuantityInput,
-  formatCurrency,
   onSelect,
 }: ProductItemCardProps) {
   const isOut = product.status === "out";
@@ -84,7 +84,9 @@ export function ProductItemCard({
           <span className="font-semibold text-[var(--fm-text-muted)]">{product.farm}</span>
           <span className="font-bold">{formatCurrency(product.price)}</span>
         </div>
-        <p className="text-sm text-[var(--fm-text-muted)]">{product.harvestLabel}</p>
+        <p className="text-sm text-[var(--fm-text-muted)]">
+          Harvested: {formatHarvestDate(product.harvestDate)}
+        </p>
 
         <div
           className="mt-auto flex items-center justify-end gap-2 pt-2"
@@ -98,7 +100,7 @@ export function ProductItemCard({
           ) : quantity === 0 ? (
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--fm-color-clay)] bg-[var(--fm-color-clay)] text-lg font-bold text-white"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--fm-color-clay)] bg-[var(--fm-color-clay)] text-lg font-bold text-white cursor-pointer"
               onClick={function() { return onIncrement(product.id) }}
               aria-label={`Add ${product.name}`}
             >
@@ -108,7 +110,7 @@ export function ProductItemCard({
             <div className="inline-flex items-center overflow-hidden rounded-[10px] border border-[var(--fm-border)]">
               <button
                 type="button"
-                className="px-3 py-2 text-sm font-semibold"
+                className="px-3 py-2 text-sm font-semibold cursor-pointer"
                 onClick={() => onDecrement(product.id)}
                 aria-label={`Decrease ${product.name}`}
               >
@@ -125,7 +127,7 @@ export function ProductItemCard({
               />
               <button
                 type="button"
-                className="px-3 py-2 text-sm font-semibold"
+                className="px-3 py-2 text-sm font-semibold cursor-pointer"
                 onClick={() => onIncrement(product.id)}
                 aria-label={`Increase ${product.name}`}
               >
