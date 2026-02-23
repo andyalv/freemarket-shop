@@ -292,9 +292,9 @@ Areas where AI agents could make different choices: database naming, TypeScript 
 **API Naming Conventions:**
 - Base: `/api/...` via Next.js Route Handlers where needed (prefer Server Actions for app-owned mutations).
 - Resource-first, plural nouns for collections:
-  - Example: `/api/products`, `/api/orders`, `/api/shipments`
+  - Example: `/api/product`, `/api/orders`, `/api/shipments`
 - Route params: use `:id` consistently for all ID routes.
-  - Example: `/api/orders/:id`, `/api/products/:id`
+  - Example: `/api/orders/:id`, `/api/product/:id`
 - Guest tracking endpoint:
   - `/api/orders/lookup?order_id=<uuid>`
 - Payments (two-step):
@@ -849,8 +849,8 @@ Shared Zod schemas used by client and server. Server re-validates all input usin
   - `GET /api/orders/lookup?order_id=<uuid>` (guest)
   - `GET /api/orders/:id` (authenticated)
 - Catalog:
-  - `GET /api/products`
-  - `GET /api/products/:id`
+  - `GET /api/product`
+  - `GET /api/product/:id`
   - `GET /api/categories`
   - `GET /api/variants` (optional) or nested under products
 - Inventory (back-office):
@@ -1003,3 +1003,4 @@ Shared Zod schemas used by client and server. Server re-validates all input usin
 - Add webhooks/Edge Functions if moving beyond test MVP.
 - Add audit logging for production readiness.
 - Select an email provider and define email delivery guarantees.
+
